@@ -9,7 +9,7 @@
 
 class Player {
 public:
-    virtual Point selectAction(Board board, Tile self_tile, std::vector<Point> valid_moves) = 0;
+    virtual Point selectAction(Board &board, Tile self_tile, std::vector<Point> valid_moves) = 0;
 };
 
 #endif //CPPTEST_PLAYER_H

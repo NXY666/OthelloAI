@@ -2,6 +2,7 @@
 #include <tuple>
 #include "MctsPlayer.h"
 #include "RandomPlayer.h"
+#include "HumanPlayer.h"
 
 // 随机谁先走
 bool rand_goes_first() {
@@ -45,8 +46,8 @@ void print_board(Board &board, Tile player_tile) {
 void game_loop(int eval_rounds, Player &player_1, Player &player_2, bool (*select_goes_first_func)()) {
     int p1_wins = 0, p2_wins = 0, draw = 0;
     for (int i = 0; i < eval_rounds; ++i) {
-        std::cout << "========================= 第 " << i + 1 << " 局 =========================" << std::endl;
-        Board *boardPtr = get_new_board_ptr();
+        std::cout << "========================= 第 " << i + 1 << " 局 =========================" << std::endl << std::endl;
+        std::shared_ptr<Board> boardPtr = get_new_board_ptr();
         Board &board = *boardPtr;
         init_board(board);
 
@@ -104,25 +105,27 @@ void game_loop(int eval_rounds, Player &player_1, Player &player_2, bool (*selec
                 who = !who;
             }
 
-            std::cout << "-------------------- 回合结束 --------------------" << std::endl;
+            std::cout << std::endl << "-------------------- 回合结束 --------------------" << std::endl << std::endl;
         }
         std::cout << "* 本局游戏结束。" << std::endl;
     }
 
-    std::cout << "========================= 全部结束 =========================" << std::endl;
+    std::cout << std::endl << "========================= 全部结束 =========================" << std::endl << std::endl;
     std::cout << "P1 胜利次数：" << p1_wins << std::endl;
     std::cout << "P2 胜利次数：" << p2_wins << std::endl;
     std::cout << "平局次数：" << draw << std::endl;
 }
 
 int main() {
-    MctsPlayer mcts_player_1(5, get_random_action);
+    MctsPlayer mcts_player_1(1, get_random_action);
     MctsPlayer mcts_player_2(1, get_roxanne_action);
 
     RandomPlayer random_player_1;
     RandomPlayer random_player_2;
 
-    game_loop(1, random_player_1, mcts_player_2, rand_goes_first);
+    HumanPlayer human_player_1;
+
+    game_loop(1, mcts_player_2, mcts_player_1, rand_goes_first);
 
     system("pause");
 

@@ -11,11 +11,11 @@
 struct Node;
 
 Point
-MCTS(Node *root, Tile self_tile, Board &board, unsigned long difficulty, Point (*get_action_func)(std::vector<Point> &));
+MCTS(Node *root, Tile self_tile, const std::shared_ptr<Board>& board_ptr, unsigned long difficulty, Point (*get_action_func)(std::vector<Point> &));
 
 Node *select(Node *node);
 
-Node *expand(Node *node, Board &board);
+Node *expand(Node *node, const std::shared_ptr<Board>& board_ptr);
 
 Point get_roxanne_action(std::vector<Point> &action_list);
 
@@ -31,7 +31,7 @@ class MctsPlayer : public Player {
 public:
     explicit MctsPlayer(unsigned long difficulty, Point (*get_action_func)(std::vector<Point> &));
 
-    Point selectAction(Board board, Tile self_tile, std::vector<Point> valid_moves) override;
+    Point selectAction(Board &board, Tile self_tile, std::vector<Point> valid_moves) override;
 };
 
 

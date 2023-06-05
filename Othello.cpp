@@ -2,15 +2,11 @@
 // Created by NXY666 on 2023/6/4.
 //
 
-#include <limits>
 #include <valarray>
 #include <iostream>
 #include <random>
-#include <ctime>
+#include <memory>
 #include "Othello.h"
-
-unsigned long difficulty_1 = 2;
-unsigned long difficulty_2 = 10;
 
 int random_int(int min, int max) {
     // 使用 std::random_device 获取真正的随机数设备
@@ -29,17 +25,17 @@ int random_int(int min, int max) {
 Tile get_oppo_tile(Tile tile);
 
 // 创建一个新的棋盘
-Board *get_new_board_ptr() {
-    return new Board(8, std::vector<Tile>(8, Tile::EMPTY));
+std::shared_ptr<Board> get_new_board_ptr() {
+    return std::make_shared<Board>(8, std::vector<Tile>(8, Tile::EMPTY));
 }
 
 // 复制棋盘
-Board *get_copy_board_ptr(Board &board) {
-    Board *dupe_board_ptr = get_new_board_ptr();
+std::shared_ptr<Board> get_copy_board_ptr(const std::shared_ptr<Board>& board) {
+    std::shared_ptr<Board> dupe_board_ptr = get_new_board_ptr();
 
     for (int x = 0; x < 8; ++x) {
         for (int y = 0; y < 8; ++y) {
-            (*dupe_board_ptr)[x][y] = board[x][y];
+            (*dupe_board_ptr)[x][y] = board->at(x)[y];
         }
     }
 

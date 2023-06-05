@@ -5,10 +5,10 @@
 #include <iostream>
 #include "HumanPlayer.h"
 
-Point HumanPlayer::selectAction(Board board, Tile self_tile, std::vector<Point> valid_moves) {
+Point HumanPlayer::selectAction(Board &board, Tile self_tile, std::vector<Point> valid_moves) {
     int x, y;
     do {
-        std::cout << "è¯·è¾“å…¥åæ ‡ï¼š";
+        std::cout << "ÇëÊäÈë×ø±ê£º";
         std::cin >> y >> x;
         std::cout << std::endl;
         x--;

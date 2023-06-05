@@ -10,7 +10,7 @@
 
 class RandomPlayer : public Player {
 public:
-    Point selectAction(Board board, Tile self_tile, std::vector<Point> valid_moves) override;
+    Point selectAction(Board &board, Tile self_tile, std::vector<Point> valid_moves) override;
 };
 
 

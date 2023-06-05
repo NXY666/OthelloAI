@@ -8,7 +8,7 @@
 
 #include <utility>
 #include <vector>
-#include "Othello.h"
+#include <memory>
 #include "types.h"
 
 int random_int(int min, int max);
@@ -25,9 +25,9 @@ std::pair<int, int> get_board_score(Board &board, Tile self_tile);
 
 bool go_for_move(Board &board, Tile tile, int x_start, int y_start);
 
-Board *get_new_board_ptr();
+std::shared_ptr<Board> get_new_board_ptr();
 
-Board *get_copy_board_ptr(Board &board);
+std::shared_ptr<Board> get_copy_board_ptr(const std::shared_ptr<Board>& board);
 
 bool is_game_over(Board &board);
 
