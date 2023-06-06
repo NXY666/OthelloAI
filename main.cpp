@@ -1,23 +1,27 @@
 #include <iostream>
 #include <tuple>
+#include <limits>
+#include <stringapiset.h>
+#include <windows.h>
 #include "MctsPlayer.h"
 #include "RandomPlayer.h"
 #include "HumanPlayer.h"
 
-// Ëæ»úË­ÏÈ×ß
+// éšæœºè°å…ˆèµ°
 bool rand_goes_first() {
     int random_num = random_int(0, 1);
 
-    std::cout << "[Ëæ»ú] P" << random_num + 1 << " ÏÈĞĞ¡£" << std::endl;
+    std::cout << "[éšæœº] P" << random_num + 1 << " å…ˆè¡Œã€‚" << std::endl;
 
     return random_num == 1;
 }
 
-// Ö¸¶¨Ë­ÏÈ×ß
+// æŒ‡å®šè°å…ˆèµ°
 bool who_goes_first() {
     int first;
-    std::cout << "[Ö¸¶¨] ÇëÊäÈëÏÈÊÖ·½£¨0´ú±íP1£¬1´ú±íP2£©£º";
+    std::cout << "[æŒ‡å®š] è¯·è¾“å…¥å…ˆæ‰‹æ–¹ï¼ˆ0ä»£è¡¨P1ï¼Œ1ä»£è¡¨P2ï¼‰ï¼š";
     std::cin >> first;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return first == 1;
 }
 
@@ -28,11 +32,11 @@ void print_board(Board &board, Tile player_tile) {
         std::string output = std::to_string(row + 1) + " ";
         for (int col = 0; col < 8; ++col) {
             if (board[col][row] == Tile::BLACK) {
-                output += "| ¡ñ ";
+                output += "| â— ";
             } else if (board[col][row] == Tile::WHITE) {
-                output += "| ¡ò ";
+                output += "| â— ";
             } else if (!is_move_valid(board, player_tile, col, row).empty()) {
-                output += "| ¡¤ ";
+                output += "| Â· ";
             } else {
                 output += "|   ";
             }
@@ -46,7 +50,8 @@ void print_board(Board &board, Tile player_tile) {
 void game_loop(int eval_rounds, Player &player_1, Player &player_2, bool (*select_goes_first_func)()) {
     int p1_wins = 0, p2_wins = 0, draw = 0;
     for (int i = 0; i < eval_rounds; ++i) {
-        std::cout << "========================= µÚ " << i + 1 << " ¾Ö =========================" << std::endl << std::endl;
+        std::cout << "========================= ç¬¬ " << i + 1 << " å±€ =========================" << std::endl
+                  << std::endl;
         std::shared_ptr<Board> boardPtr = get_new_board_ptr();
         Board &board = *boardPtr;
         init_board(board);
@@ -72,23 +77,23 @@ void game_loop(int eval_rounds, Player &player_1, Player &player_2, bool (*selec
             if (is_game_over(board)) {
                 std::pair<int, int> scores = get_board_score(board, player_1_tile);
                 if (scores.first > scores.second) {
-                    std::cout << "* P1 »ñÊ¤£º" << scores.first << ":" << scores.second << std::endl;
+                    std::cout << "* P1 è·èƒœï¼š" << scores.first << ":" << scores.second << std::endl;
                     ++p1_wins;
                 } else if (scores.first == scores.second) {
-                    std::cout << "* Ë«·½Æ½¾Ö£º" << scores.first << ":" << scores.second << std::endl;
+                    std::cout << "* åŒæ–¹å¹³å±€ï¼š" << scores.first << ":" << scores.second << std::endl;
                     ++draw;
                 } else {
-                    std::cout << "* P2 »ñÊ¤ " << scores.first << ":" << scores.second << std::endl;
+                    std::cout << "* P2 è·èƒœ " << scores.first << ":" << scores.second << std::endl;
                     ++p2_wins;
                 }
                 break;
             }
 
-            std::cout << "* ÂÖµ½ P" << who + 1 << " ÁË¡£" << std::endl;
+            std::cout << "* è½®åˆ° P" << who + 1 << " äº†ã€‚" << std::endl;
 
             std::vector<Point> valid_moves = get_valid_moves(board, curr_tile);
 
-            std::cout << "* ºÏ·¨Âä×Ó£º";
+            std::cout << "* åˆæ³•è½å­ï¼š";
             for (const auto &move: valid_moves) {
                 std::cout << "(" << move.second + 1 << " " << move.first + 1 << ") ";
             }
@@ -98,25 +103,28 @@ void game_loop(int eval_rounds, Player &player_1, Player &player_2, bool (*selec
             std::tie(x, y) = current_player.selectAction(board, curr_tile, valid_moves);
             go_for_move(board, curr_tile, x, y);
 
-            std::cout << "* P" << who + 1 << " Ö´ " << (curr_tile == Tile::BLACK ? "¡ñ" : "¡ò") << " ÔÚ (" << y + 1 << ", " << x + 1 << ") ´¦Âä×Ó¡£" << std::endl;
+            std::cout << "* P" << who + 1 << " æ‰§ " << (curr_tile == Tile::BLACK ? "â—" : "â—") << " åœ¨ (" << y + 1
+                      << ", " << x + 1 << ") å¤„è½å­ã€‚" << std::endl;
 
-            // Èç¹û¶Ô·½ÓĞºÏ·¨Âä×Ó£¬ÔòÂÖµ½¶Ô·½×ß
+            // å¦‚æœå¯¹æ–¹æœ‰åˆæ³•è½å­ï¼Œåˆ™è½®åˆ°å¯¹æ–¹èµ°
             if (!get_valid_moves(board, oppo_tile).empty()) {
                 who = !who;
             }
 
-            std::cout << std::endl << "-------------------- »ØºÏ½áÊø --------------------" << std::endl << std::endl;
+            std::cout << std::endl << "-------------------- å›åˆç»“æŸ --------------------" << std::endl << std::endl;
         }
-        std::cout << "* ±¾¾ÖÓÎÏ·½áÊø¡£" << std::endl;
+        std::cout << "* æœ¬å±€æ¸¸æˆç»“æŸã€‚" << std::endl;
     }
 
-    std::cout << std::endl << "========================= È«²¿½áÊø =========================" << std::endl << std::endl;
-    std::cout << "P1 Ê¤Àû´ÎÊı£º" << p1_wins << std::endl;
-    std::cout << "P2 Ê¤Àû´ÎÊı£º" << p2_wins << std::endl;
-    std::cout << "Æ½¾Ö´ÎÊı£º" << draw << std::endl;
+    std::cout << std::endl << "========================= å…¨éƒ¨ç»“æŸ =========================" << std::endl << std::endl;
+    std::cout << "P1 èƒœåˆ©æ¬¡æ•°ï¼š" << p1_wins << std::endl;
+    std::cout << "P2 èƒœåˆ©æ¬¡æ•°ï¼š" << p2_wins << std::endl;
+    std::cout << "å¹³å±€æ¬¡æ•°ï¼š" << draw << std::endl;
 }
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
+
     MctsPlayer mcts_player_1(1, get_random_action);
     MctsPlayer mcts_player_2(1, get_roxanne_action);
 
@@ -125,7 +133,7 @@ int main() {
 
     HumanPlayer human_player_1;
 
-    game_loop(1, mcts_player_2, mcts_player_1, rand_goes_first);
+    game_loop(5, mcts_player_1, random_player_1, rand_goes_first);
 
     system("pause");
 

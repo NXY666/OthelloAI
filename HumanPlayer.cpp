@@ -3,16 +3,28 @@
 //
 
 #include <iostream>
+#include <sstream>
+#include <limits>
 #include "HumanPlayer.h"
 
 Point HumanPlayer::selectAction(Board &board, Tile self_tile, std::vector<Point> valid_moves) {
+    std::string input;
     int x, y;
-    do {
-        std::cout << "ÇëÊäÈë×ø±ê£º";
-        std::cin >> y >> x;
-        std::cout << std::endl;
-        x--;
-        y--;
-    } while (is_move_valid(board, self_tile, x, y).empty());
-    return std::make_pair(x, y);
+    while (true) {
+        std::cout << "è¯·è¾“å…¥åæ ‡ï¼š";
+        std::getline(std::cin, input);
+
+        std::istringstream iss(input);
+        if (iss >> y >> x && iss.eof()) {
+            if (is_move_valid(board, self_tile, x - 1, y - 1).empty()) {
+                std::cout << "éžæ³•èµ°å­ã€‚" << std::endl;
+            } else {
+                break;
+            }
+        } else {
+            std::cout << "æ ¼å¼é”™è¯¯ã€‚" << std::endl;
+        }
+    }
+
+    return std::make_pair(x - 1, y - 1);
 }

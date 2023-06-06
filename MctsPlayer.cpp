@@ -13,25 +13,25 @@
 #include "MctsPlayer.h"
 
 struct Node {
-    // ·ÃÎÊ´ÎÊı
+    // è®¿é—®æ¬¡æ•°
     int visits;
 
-    // Ê¤Àû´ÎÊı
+    // èƒœåˆ©æ¬¡æ•°
     double reward;
 
-    // µ±Ç°ÆåÅÌ×´Ì¬
+    // å½“å‰æ£‹ç›˜çŠ¶æ€
     std::shared_ptr<Board> now_board;
 
-    // ×Ó½ÚµãÃÇ
+    // å­èŠ‚ç‚¹ä»¬
     std::vector<Node *> children;
 
-    // ¸¸½Úµã
+    // çˆ¶èŠ‚ç‚¹
     Node *parent;
 
-    // Âä×ÓÎ»ÖÃ
+    // è½å­ä½ç½®
     Point action;
 
-    // Âä×ÓÑÕÉ«
+    // è½å­é¢œè‰²
     Tile tile;
 
     explicit Node(std::shared_ptr<Board> now_board, Node *parent = nullptr, Point action = std::make_pair(0, 0),
@@ -53,7 +53,7 @@ struct Node {
 
     [[nodiscard]] double get_ucb() const {
         if (visits == 0) {
-            // Èç¹û½ÚµãÃ»ÓĞ±»·ÃÎÊ¹ı£¬ÄÇÃ´¾Í·µ»ØÎŞÏŞ´ó
+            // å¦‚æœèŠ‚ç‚¹æ²¡æœ‰è¢«è®¿é—®è¿‡ï¼Œé‚£ä¹ˆå°±è¿”å›æ— é™å¤§
             return std::numeric_limits<double>::max();
         }
 
@@ -67,12 +67,12 @@ struct Node {
     }
 
     bool full_expanded() {
-        // Èç¹ûÃ»ÓĞ×Ó½Úµã£¬ÄÇÃ´·µ»Øfalse
+        // å¦‚æœæ²¡æœ‰å­èŠ‚ç‚¹ï¼Œé‚£ä¹ˆè¿”å›false
         if (children.empty()) {
             return false;
         }
 
-        // ËùÓĞ×Ó½Úµã¶¼±»·ÃÎÊ¹ıÔò·µ»Øtrue£¬·ñÔò·µ»Øfalse
+        // æ‰€æœ‰å­èŠ‚ç‚¹éƒ½è¢«è®¿é—®è¿‡åˆ™è¿”å›trueï¼Œå¦åˆ™è¿”å›false
         return std::all_of(children.begin(), children.end(), [](Node *child) {
             return child->visits != 0;
         });
@@ -102,24 +102,24 @@ Point MCTS(
         unsigned long difficulty,
         Point (*get_action_func)(std::vector<Point> &)
 ) {
-    std::cout << "> MCTS AI ¾ö¶¨Ë¼¿¼ " << difficulty << " Ãë¡£" << std::endl;
+    std::cout << "> MCTS AI å†³å®šæ€è€ƒ " << difficulty << " ç§’ã€‚" << std::endl;
     unsigned long end_time = std::time(nullptr) + difficulty;
     int play_out = 0;
 
     while (true) {
-        // Ñ¡Ôñ½Úµã
+        // é€‰æ‹©èŠ‚ç‚¹
         Node *selected_node = select(root);
-        // À©Õ¹½Úµã
+        // æ‰©å±•èŠ‚ç‚¹
         Node *leaf_node = expand(selected_node, board_ptr);
-        // Ä£Äâ
+        // æ¨¡æ‹Ÿ
         int reward = simulate(leaf_node, self_tile, get_action_func);
-        // »ØËİ
+        // å›æº¯
         backup(reward, leaf_node, self_tile);
 
         play_out++;
 
         if (std::time(nullptr) > end_time) {
-            std::cout << "> MCTS AI ÔÚ´ËÆÚ¼äÄ£ÄâÁË " << play_out << " ¾Ö¡£" << std::endl;
+            std::cout << "> MCTS AI ç»è¿‡ " << play_out << " å±€çš„æ¨¡æ‹Ÿï¼Œå¾—å‡ºäº†ç»“è®ºã€‚" << std::endl;
             break;
         }
     }
@@ -286,18 +286,31 @@ Point MctsPlayer::selectAction(Board &board, Tile self_tile, std::vector<Point> 
     Point action = MCTS(root, self_tile, board_ptr, difficulty, get_action_func);
 
     std::cout << "+----------+----------+----------+----------+" << std::endl;
-    std::cout << "| ÓĞĞ§Âä×Ó |   ½±Àø   |   ·ÃÎÊ   |   Ê¤ÂÊ   |" << std::endl;
+    std::cout << "| æœ‰æ•ˆè½å­ |   å¥–åŠ±   |   è®¿é—®   |   èƒœç‡   |" << std::endl;
     std::cout << "+----------+----------+----------+----------+" << std::endl;
 
     for (Node *child: root->children) {
         bool is_bold = child->action.first == action.first && child->action.second == action.second;
         double winRate = static_cast<double>(child->reward) / child->visits * 100;
-        std::cout << "|  " << (is_bold ? "\033[1m\033[5m" : "")
-                  << "(" << std::setw(1) << child->action.second + 1 << ", " << std::setw(1) << child->action.first + 1
-                  << ") \033[0m"
-                  << " |" << std::setw(9) << std::fixed << std::setprecision(0) << child->reward
-                  << " |" << std::setw(9) << child->visits
-                  << " |" << std::setw(8) << std::fixed << std::setprecision(2) << winRate << "% |" << std::endl;
+        std::cout << "|"
+                  << (is_bold ? "\033[1m\033[5m" : "")
+                  << "  (" << std::setw(1) << child->action.second + 1 << ", " << std::setw(1) << child->action.first + 1 << ")  "
+                  << "\033[0m"
+                  << "|"
+                  << (is_bold ? "\033[1m\033[5m" : "")
+                  << std::setw(9) << std::fixed << std::setprecision(0) << child->reward
+                  << "\033[0m"
+                  << " |"
+                  << (is_bold ? "\033[1m\033[5m" : "")
+                  << std::setw(9) << child->visits
+                  << "\033[0m"
+                  << " |"
+                  << (is_bold ? "\033[1m\033[5m" : "")
+                  << std::setw(8) << std::fixed << std::setprecision(2) << winRate << "%"
+                  << "\033[0m"
+                  << " |"
+                  << std::endl;
+
     }
 
     std::cout << "+----------+----------+----------+----------+" << std::endl;

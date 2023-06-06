@@ -9,27 +9,27 @@
 #include "Othello.h"
 
 int random_int(int min, int max) {
-    // Ê¹ÓÃ std::random_device »ñÈ¡ÕæÕıµÄËæ»úÊıÉè±¸
+    // ä½¿ç”¨ std::random_device è·å–çœŸæ­£çš„éšæœºæ•°è®¾å¤‡
     std::random_device rd;
 
-    // Ê¹ÓÃ std::mt19937 ÒıÇæ£¬²¢Ê¹ÓÃ std::random_device Ìá¹©µÄËæ»úÊıÖÖ×Ó½øĞĞ³õÊ¼»¯
+    // ä½¿ç”¨ std::mt19937 å¼•æ“ï¼Œå¹¶ä½¿ç”¨ std::random_device æä¾›çš„éšæœºæ•°ç§å­è¿›è¡Œåˆå§‹åŒ–
     std::mt19937 gen(rd());
 
-    // Ê¹ÓÃ std::uniform_int_distribution Éú³ÉÖ¸¶¨·¶Î§ÄÚµÄ¾ùÔÈ·Ö²¼µÄÕûÊı
+    // ä½¿ç”¨ std::uniform_int_distribution ç”ŸæˆæŒ‡å®šèŒƒå›´å†…çš„å‡åŒ€åˆ†å¸ƒçš„æ•´æ•°
     std::uniform_int_distribution<int> dist(min, max);
 
-    // ·µ»ØÉú³ÉµÄËæ»úÊı
+    // è¿”å›ç”Ÿæˆçš„éšæœºæ•°
     return dist(gen);
 }
 
 Tile get_oppo_tile(Tile tile);
 
-// ´´½¨Ò»¸öĞÂµÄÆåÅÌ
+// åˆ›å»ºä¸€ä¸ªæ–°çš„æ£‹ç›˜
 std::shared_ptr<Board> get_new_board_ptr() {
     return std::make_shared<Board>(8, std::vector<Tile>(8, Tile::EMPTY));
 }
 
-// ¸´ÖÆÆåÅÌ
+// å¤åˆ¶æ£‹ç›˜
 std::shared_ptr<Board> get_copy_board_ptr(const std::shared_ptr<Board>& board) {
     std::shared_ptr<Board> dupe_board_ptr = get_new_board_ptr();
 
@@ -42,7 +42,7 @@ std::shared_ptr<Board> get_copy_board_ptr(const std::shared_ptr<Board>& board) {
     return dupe_board_ptr;
 }
 
-// ³õÊ¼»¯ÆåÅÌ
+// åˆå§‹åŒ–æ£‹ç›˜
 void init_board(Board &board) {
     for (int x = 0; x < 8; ++x) {
         for (int y = 0; y < 8; ++y) {
@@ -50,14 +50,14 @@ void init_board(Board &board) {
         }
     }
 
-    // ¿ª¾ÖÊ±·ÅÖÃ³õÊ¼Æå×Ó
+    // å¼€å±€æ—¶æ”¾ç½®åˆå§‹æ£‹å­
     board[3][3] = Tile::WHITE;
     board[3][4] = Tile::BLACK;
     board[4][3] = Tile::BLACK;
     board[4][4] = Tile::WHITE;
 }
 
-// »ñÈ¡ÆåÅÌÉÏºÚ°×Ë«·½µÄÆå×ÓÊı
+// è·å–æ£‹ç›˜ä¸Šé»‘ç™½åŒæ–¹çš„æ£‹å­æ•°
 std::pair<int, int> get_board_score(Board &board, Tile self_tile) {
     int self_score = 0, oppo_score = 0;
 
@@ -76,7 +76,7 @@ std::pair<int, int> get_board_score(Board &board, Tile self_tile) {
     return {self_score, oppo_score};
 }
 
-// »ñÈ¡¿ÉÂä×ÓµÄÎ»ÖÃ
+// è·å–å¯è½å­çš„ä½ç½®
 std::vector<Point> get_valid_moves(Board &board, Tile tile) {
     std::vector<Point> valid_moves;
 
@@ -92,13 +92,13 @@ std::vector<Point> get_valid_moves(Board &board, Tile tile) {
 }
 
 /**
- * @brief È·¶¨Ö¸¶¨µÄÎ»ÖÃÊÇ·ñÎªÓĞĞ§µÄÂä×ÓÎ»ÖÃ¡£
+ * @brief ç¡®å®šæŒ‡å®šçš„ä½ç½®æ˜¯å¦ä¸ºæœ‰æ•ˆçš„è½å­ä½ç½®ã€‚
  *
- * @param board ÓÃÓÚ¼ì²éÓĞĞ§Âä×ÓµÄÓÎÏ·ÆåÅÌ¡£
- * @param self_tile Òª¼ì²éÓĞĞ§Âä×ÓµÄÆå×Ó¡£
- * @param x_start ÆğÊ¼Î»ÖÃµÄ x ×ø±ê¡£
- * @param y_start ÆğÊ¼Î»ÖÃµÄ y ×ø±ê¡£
- * @return Êä³öÂä×Ó¼°³Ô×ÓµÄÎ»ÖÃ¡£Èç¹û²»¿ÉÂä×Ó£¬Ôò·µ»Ø¿ÕÏòÁ¿¡£
+ * @param board ç”¨äºæ£€æŸ¥æœ‰æ•ˆè½å­çš„æ¸¸æˆæ£‹ç›˜ã€‚
+ * @param self_tile è¦æ£€æŸ¥æœ‰æ•ˆè½å­çš„æ£‹å­ã€‚
+ * @param x_start èµ·å§‹ä½ç½®çš„ x åæ ‡ã€‚
+ * @param y_start èµ·å§‹ä½ç½®çš„ y åæ ‡ã€‚
+ * @return è¾“å‡ºè½å­åŠåƒå­çš„ä½ç½®ã€‚å¦‚æœä¸å¯è½å­ï¼Œåˆ™è¿”å›ç©ºå‘é‡ã€‚
  */
 std::vector<Point> is_move_valid(Board &board, Tile self_tile, int x_start, int y_start) {
     if (!is_on_board(x_start, y_start) || board[x_start][y_start] != Tile::EMPTY) {
@@ -153,23 +153,23 @@ std::vector<Point> is_move_valid(Board &board, Tile self_tile, int x_start, int 
 }
 
 /**
- * @brief ¼ì²éÖ¸¶¨Î»ÖÃÊÇ·ñÔÚÆåÅÌÉÏ¡£
+ * @brief æ£€æŸ¥æŒ‡å®šä½ç½®æ˜¯å¦åœ¨æ£‹ç›˜ä¸Šã€‚
  *
- * @param x ¼ì²éµÄ x ×ø±ê¡£
- * @param y ¼ì²éµÄ y ×ø±ê¡£
- * @return Èç¹ûÔÚÆåÅÌÉÏ£¬Ôò·µ»Ø true£¬·ñÔò·µ»Ø false¡£
+ * @param x æ£€æŸ¥çš„ x åæ ‡ã€‚
+ * @param y æ£€æŸ¥çš„ y åæ ‡ã€‚
+ * @return å¦‚æœåœ¨æ£‹ç›˜ä¸Šï¼Œåˆ™è¿”å› trueï¼Œå¦åˆ™è¿”å› falseã€‚
  */
 bool is_on_board(int x, int y) {
     return x >= 0 && x < 8 && y >= 0 && y < 8;
 }
 
 /**
- * @brief Âä×Ó
+ * @brief è½å­
  *
- * @param board ÓÃÓÚÂä×ÓµÄÓÎÏ·ÆåÅÌ¡£
- * @param tile ÒªÂä×ÓµÄÆå×Ó¡£
- * @param x_start ÆğÊ¼Î»ÖÃµÄ x ×ø±ê¡£
- * @param y_start ÆğÊ¼Î»ÖÃµÄ y ×ø±ê¡£
+ * @param board ç”¨äºè½å­çš„æ¸¸æˆæ£‹ç›˜ã€‚
+ * @param tile è¦è½å­çš„æ£‹å­ã€‚
+ * @param x_start èµ·å§‹ä½ç½®çš„ x åæ ‡ã€‚
+ * @param y_start èµ·å§‹ä½ç½®çš„ y åæ ‡ã€‚
  */
 bool go_for_move(Board &board, Tile tile, int x_start, int y_start) {
     std::vector<Point> tile_flip = is_move_valid(board, tile, x_start, y_start);
@@ -185,7 +185,7 @@ bool go_for_move(Board &board, Tile tile, int x_start, int y_start) {
     return true;
 }
 
-// ¼ì²éÓÎÏ·ÊÇ·ñ½áÊø
+// æ£€æŸ¥æ¸¸æˆæ˜¯å¦ç»“æŸ
 bool is_game_over(Board &board) {
     auto score = get_board_score(board, Tile::BLACK);
     if (score.first == 0 || score.second == 0) {
@@ -196,8 +196,3 @@ bool is_game_over(Board &board) {
     }
     return false;
 }
-
-//int main() {
-//    game_loop(5, mcts_1_move, mcts_2_move);
-//    return 0;
-//}
