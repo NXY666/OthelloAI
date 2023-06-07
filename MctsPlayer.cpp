@@ -13,25 +13,25 @@
 #include "MctsPlayer.h"
 
 struct Node {
-    // è®¿é—®æ¬¡æ•°
+    // ·ÃÎÊ´ÎÊı
     int visits;
 
-    // èƒœåˆ©æ¬¡æ•°
+    // Ê¤Àû´ÎÊı
     double reward;
 
-    // å½“å‰æ£‹ç›˜çŠ¶æ€
+    // µ±Ç°ÆåÅÌ×´Ì¬
     std::shared_ptr<Board> now_board;
 
-    // å­èŠ‚ç‚¹ä»¬
+    // ×Ó½ÚµãÃÇ
     std::vector<Node *> children;
 
-    // çˆ¶èŠ‚ç‚¹
+    // ¸¸½Úµã
     Node *parent;
 
-    // è½å­ä½ç½®
+    // Âä×ÓÎ»ÖÃ
     Point action;
 
-    // è½å­é¢œè‰²
+    // Âä×ÓÑÕÉ«
     Tile tile;
 
     explicit Node(std::shared_ptr<Board> now_board, Node *parent = nullptr, Point action = std::make_pair(0, 0),
@@ -53,7 +53,7 @@ struct Node {
 
     [[nodiscard]] double get_ucb() const {
         if (visits == 0) {
-            // å¦‚æœèŠ‚ç‚¹æ²¡æœ‰è¢«è®¿é—®è¿‡ï¼Œé‚£ä¹ˆå°±è¿”å›æ— é™å¤§
+            // Èç¹û½ÚµãÃ»ÓĞ±»·ÃÎÊ¹ı£¬ÄÇÃ´¾Í·µ»ØÎŞÏŞ´ó
             return std::numeric_limits<double>::max();
         }
 
@@ -67,12 +67,12 @@ struct Node {
     }
 
     bool full_expanded() {
-        // å¦‚æœæ²¡æœ‰å­èŠ‚ç‚¹ï¼Œé‚£ä¹ˆè¿”å›false
+        // Èç¹ûÃ»ÓĞ×Ó½Úµã£¬ÄÇÃ´·µ»Øfalse
         if (children.empty()) {
             return false;
         }
 
-        // æ‰€æœ‰å­èŠ‚ç‚¹éƒ½è¢«è®¿é—®è¿‡åˆ™è¿”å›trueï¼Œå¦åˆ™è¿”å›false
+        // ËùÓĞ×Ó½Úµã¶¼±»·ÃÎÊ¹ıÔò·µ»Øtrue£¬·ñÔò·µ»Øfalse
         return std::all_of(children.begin(), children.end(), [](Node *child) {
             return child->visits != 0;
         });
@@ -102,24 +102,24 @@ Point MCTS(
         unsigned long difficulty,
         Point (*get_action_func)(std::vector<Point> &)
 ) {
-    std::cout << "> MCTS AI å†³å®šæ€è€ƒ " << difficulty << " ç§’ã€‚" << std::endl;
+    std::cout << "> MCTS AI ¾ö¶¨Ë¼¿¼ " << difficulty << " Ãë¡£" << std::endl;
     unsigned long end_time = std::time(nullptr) + difficulty;
     int play_out = 0;
 
     while (true) {
-        // é€‰æ‹©èŠ‚ç‚¹
+        // Ñ¡Ôñ½Úµã
         Node *selected_node = select(root);
-        // æ‰©å±•èŠ‚ç‚¹
+        // À©Õ¹½Úµã
         Node *leaf_node = expand(selected_node, board_ptr);
-        // æ¨¡æ‹Ÿ
+        // Ä£Äâ
         int reward = simulate(leaf_node, self_tile, get_action_func);
-        // å›æº¯
+        // »ØËİ
         backup(reward, leaf_node, self_tile);
 
         play_out++;
 
         if (std::time(nullptr) > end_time) {
-            std::cout << "> MCTS AI ç»è¿‡ " << play_out << " å±€çš„æ¨¡æ‹Ÿï¼Œå¾—å‡ºäº†ç»“è®ºã€‚" << std::endl;
+            std::cout << "> MCTS AI ¾­¹ı " << play_out << " ¾ÖµÄÄ£Äâ£¬µÃ³öÁË½áÂÛ¡£" << std::endl;
             break;
         }
     }
@@ -191,17 +191,60 @@ Node *expand(Node *node, const std::shared_ptr<Board> &board_ptr) {
         return node->children[0];
     }
 }
+//
+//std::vector<std::vector<int>> const board_gravity = {
+//        {9, 1, 8, 6, 6, 8, 1, 9},
+//        {1, 0, 2, 3, 3, 2, 0, 1},
+//        {8, 2, 7, 5, 5, 7, 2, 8},
+//        {6, 3, 5, 4, 4, 5, 3, 6},
+//        {6, 3, 5, 4, 4, 5, 3, 6},
+//        {8, 2, 7, 5, 5, 7, 2, 8},
+//        {1, 0, 2, 3, 3, 2, 0, 1},
+//        {9, 1, 8, 6, 6, 8, 1, 9}
+//};
 
+//weight = [
+//[70, -20, 20, 20, 20, 20, -15, 70],
+//[-20,-30,5,5,5,5,-30,-15],
+//[20,5,1,1,1,1,5,20],
+//[20,5,1,1,1,1,5,20],
+//[20,5,1,1,1,1,5,20],
+//[20,5,1,1,1,1,5,20],
+//[-20,-30,5,5,5,5,-30,-15],
+//[70,-15,20,20,20,20,-15,70]
+//]
 std::vector<std::vector<int>> const board_gravity = {
-        {9, 1, 8, 6, 6, 8, 1, 9},
-        {1, 0, 2, 3, 3, 2, 0, 1},
-        {8, 2, 7, 5, 5, 7, 2, 8},
-        {6, 3, 5, 4, 4, 5, 3, 6},
-        {6, 3, 5, 4, 4, 5, 3, 6},
-        {8, 2, 7, 5, 5, 7, 2, 8},
-        {1, 0, 2, 3, 3, 2, 0, 1},
-        {9, 1, 8, 6, 6, 8, 1, 9}
+        {70, -20, 20, 20, 20, 20, -20, 70},
+        {-20, -30, 5, 5, 5, 5, -30, -20},
+        {20, 5, 1, 1, 1, 1, 5, 20},
+        {20, 5, 1, 1, 1, 1, 5, 20},
+        {20, 5, 1, 1, 1, 1, 5, 20},
+        {20, 5, 1, 1, 1, 1, 5, 20},
+        {-20, -30, 5, 5, 5, 5, -30, -20},
+        {70, -20, 20, 20, 20, 20, -20, 70}
 };
+//WEIGHTS = np.array([
+//[20, -3, 11, 8, 8, 11, -3, 20],
+//[-3, -7, -4, 1, 1, -4, -7, -3],
+//[11, -4, 2, 2, 2, 2, -4, 11],
+//[8, 1, 2, -3, -3, 2, 1, 8],
+//[8, 1, 2, -3, -3, 2, 1, 8],
+//[11, -4, 2, 2, 2, 2, -4, 11],
+//[-3, -7, -4, 1, 1, -4, -7, -3],
+//[20, -3, 11, 8, 8, 11, -3, 20]
+//])
+//std::vector<std::vector<int>> const board_gravity = {
+//        {20, -3, 11, 8, 8, 11, -3, 20},
+//        {-3, -7, -4, 1, 1, -4, -7, -3},
+//        {11, -4, 2, 2, 2, 2, -4, 11},
+//        {8, 1, 2, -3, -3, 2, 1, 8},
+//        {8, 1, 2, -3, -3, 2, 1, 8},
+//        {11, -4, 2, 2, 2, 2, -4, 11},
+//        {-3, -7, -4, 1, 1, -4, -7, -3},
+//        {20, -3, 11, 8, 8, 11, -3, 20}
+//};
+
+
 
 Point get_roxanne_action(std::vector<Point> &action_list) {
     std::shuffle(action_list.begin(), action_list.end(), std::mt19937(std::random_device()()));
@@ -286,7 +329,7 @@ Point MctsPlayer::selectAction(Board &board, Tile self_tile, std::vector<Point> 
     Point action = MCTS(root, self_tile, board_ptr, difficulty, get_action_func);
 
     std::cout << "+----------+----------+----------+----------+" << std::endl;
-    std::cout << "| æœ‰æ•ˆè½å­ |   å¥–åŠ±   |   è®¿é—®   |   èƒœç‡   |" << std::endl;
+    std::cout << "| ÓĞĞ§Âä×Ó |   ½±Àø   |   ·ÃÎÊ   |   Ê¤ÂÊ   |" << std::endl;
     std::cout << "+----------+----------+----------+----------+" << std::endl;
 
     for (Node *child: root->children) {
